@@ -39,8 +39,15 @@ namespace TaskManager.Application.Services
 
         public async Task UpdateAsync(TaskItemDto taskDto)
         {
-            var task = taskDto.Adapt<TaskItem>();
-            await _repository.UpdateAsync(task);
+            var existingTask = await _repository.GetByIdAsync(taskDto.Id);
+            if (existingTask == null) return;
+
+            existingTask.Title = taskDto.Title;
+            existingTask.Description = taskDto.Description;
+            existingTask.IsCompleted = taskDto.IsCompleted;
+            existingTask.CompletedAt = taskDto.IsCompleted ? DateTime.UtcNow : null;
+
+            await _repository.UpdateAsync(existingTask);
         }
         #endregion
 
