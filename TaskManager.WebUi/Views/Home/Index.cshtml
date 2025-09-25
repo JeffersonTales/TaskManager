@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Gerenciador de Tarefas";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="app">
+    <input v-model="newTask" placeholder="Nova tarefa" />
+    <button v-on:click="addTask">Adicionar</button>
+
+    <ul>
+        <li v-for="task in tasks" :key="task.id">
+            {{ task.title }}
+        </li>
+    </ul>
+</div>
+
+<script src="/js/vue.global.js" defer></script>
+<script src="/js/taskApp.js" defer></script>
