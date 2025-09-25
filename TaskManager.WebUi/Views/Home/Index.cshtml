@@ -8,9 +8,22 @@
     <input v-model="newTask" placeholder="Nova tarefa" />
     <button v-on:click="addTask">Adicionar</button>
 
+    <div>
+        <button v-on:click="filter = 'all'">Todas</button>
+        <button v-on:click="filter = 'pending'">Pendentes</button>
+        <button v-on:click="filter = 'completed'">Concluídas</button>
+    </div>
+
     <ul>
-        <li v-for="task in tasks" :key="task.id">
-            {{ task.title }}
+        <li v-for="task in sortedTasks" :key="task.id">
+            <input type="checkbox" :checked="task.isCompleted" v-on:change="completeTask(task)" />
+
+            <span v-if="editingTask?.id !== task.id">{{ task.title }}</span>
+            <input v-else v-model="editingTask.title" />
+
+            <button v-on:click="editTask(task)">Editar</button>
+            <button v-if="editingTask?.id === task.id" v-on:click="saveTask">Salvar</button>
+            <button v-on:click="deleteTask(task.id)">🗑️</button>
         </li>
     </ul>
 </div>
