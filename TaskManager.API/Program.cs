@@ -1,5 +1,7 @@
-﻿using TaskManager.Infra.Data.Context;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Application.Validation;
+using TaskManager.Infra.Data.Context;
 using TaskManager.Infra.IoC;
 
 namespace TaskManager.API
@@ -22,6 +24,7 @@ namespace TaskManager.API
 
             // Services
             builder.Services.AddControllers();
+            builder.Services.AddValidatorsFromAssemblyContaining<TaskItemDtoValidator>();
             builder.Services.AddDbContext<TaskDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

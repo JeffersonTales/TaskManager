@@ -1,12 +1,22 @@
-﻿const { createApp } = Vue;
+﻿import TaskForm from './components/taskForm.js';
+import TaskTable from './components/taskTable.js';
+import ValidationSummary from './components/validationSummary.js';
 
-createApp({
+const app = Vue.createApp({
     data() {
         return {
-            newTask: '',
-            tasks: [],
-            editingTask: null,
-            filter: 'all'
+            newTask: {
+                title: '',
+                description: '',
+                isCompleted: false,
+                createdAt: new Date().toISOString(),
+                completedAt: null
+            },
+            tasks: [],           // Lista de tarefas carregadas da API
+            editingTask: null,   // Tarefa que está sendo editada
+            filter: 'all',       // Filtro ativo: 'all', 'pending', 'completed'
+            validationErrors: {} // ← Objeto para armazenar erros de validação
+
         };
     },
     computed: {
@@ -17,39 +27,58 @@ createApp({
         },
         sortedTasks() {
             return this.filteredTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        },
+        formattedCreatedAt() {
+            const date = new Date(this.newTask.createdAt);
+            return date.toLocaleDateString('pt-BR');
         }
     },
     methods: {
         apiUrl(path) {
-            return (window.location.hostname === "localhost"
-                ? "https://localhost:7112"
-                : "http://taskmanager-api:8080") + path;
+            const isDocker = window.location.port === "5001";
+            const base = isDocker
+                ? "http://localhost:5000" // Docker: API sem SSL
+                : "https://localhost:7112"; // Local: API com SSL
+
+            return base + path;
         },
         async fetchTasks() {
             const res = await fetch(this.apiUrl("/api/task"));
             this.tasks = await res.json();
         },
         async addTask() {
-            if (!this.newTask.trim()) return;
+            if (!this.newTask.title.trim()) return;
 
-            await fetch(this.apiUrl("/api/task"), {
+            const response = await fetch(this.apiUrl("/api/task"), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id: crypto.randomUUID(),
-                    title: this.newTask,
-                    description: '',
-                    isCompleted: false,
-                    createdAt: new Date().toISOString(),
-                    completedAt: null
-                })
+                body: JSON.stringify(this.newTask)
             });
 
-            this.newTask = '';
+            if (!response.ok) {
+                const errorData = await response.json();
+                this.validationErrors = errorData.errors || {};
+
+                setTimeout(() => {
+                    this.validationErrors = {};
+                }, 3000);
+
+                return;
+            }
+
+            this.newTask = {
+                title: '',
+                description: '',
+                isCompleted: false,
+                createdAt: new Date().toISOString(),
+                completedAt: null
+            };
+            this.validationErrors = {};
             this.fetchTasks();
         },
         editTask(task) {
             this.editingTask = { ...task };
+            this.validationErrors = {};
         },
         async saveTask() {
             await fetch(this.apiUrl(`/api/task/${this.editingTask.id}`), {
@@ -66,11 +95,28 @@ createApp({
             this.fetchTasks();
         },
         async completeTask(task) {
-            await fetch(this.apiUrl(`/api/task/${task.id}/complete`), { method: 'PATCH' });
+            const updatedTask = {
+                ...task,
+                isCompleted: !task.isCompleted,
+                completedAt: !task.isCompleted ? new Date().toISOString() : null
+            };
+
+            await fetch(this.apiUrl(`/api/task/${task.id}`), {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedTask)
+            });
+
             this.fetchTasks();
         }
     },
     mounted() {
         this.fetchTasks();
     }
-}).mount('#app');
+});
+
+app.component('validation-summary', ValidationSummary);
+app.component('task-form', TaskForm);
+app.component('task-table', TaskTable);
+
+app.mount('#app');

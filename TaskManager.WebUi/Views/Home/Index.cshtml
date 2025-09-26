@@ -4,29 +4,35 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<div id="app">
-    <input v-model="newTask" placeholder="Nova tarefa" />
-    <button v-on:click="addTask">Adicionar</button>
+<div id="app" class="container mt-4">
+    <!-- Componente de validação global -->
+    <validation-summary :errors="validationErrors"></validation-summary>
 
-    <div>
-        <button v-on:click="filter = 'all'">Todas</button>
-        <button v-on:click="filter = 'pending'">Pendentes</button>
-        <button v-on:click="filter = 'completed'">Concluídas</button>
+    <!-- Formulário de nova tarefa -->
+    <task-form :new-task="newTask"
+               :validation-errors="validationErrors"
+               :add-task="addTask"
+               :formatted-created-at="formattedCreatedAt">
+    </task-form>
+
+    <!-- Filtros -->
+    <div class="btn-group mb-3">
+        <button class="btn btn-outline-secondary" v-on:click="filter = 'all'">Todas</button>
+        <button class="btn btn-outline-warning" v-on:click="filter = 'pending'">Pendentes</button>
+        <button class="btn btn-outline-success" v-on:click="filter = 'completed'">Concluídas</button>
     </div>
 
-    <ul>
-        <li v-for="task in sortedTasks" :key="task.id">
-            <input type="checkbox" :checked="task.isCompleted" v-on:change="completeTask(task)" />
-
-            <span v-if="editingTask?.id !== task.id">{{ task.title }}</span>
-            <input v-else v-model="editingTask.title" />
-
-            <button v-on:click="editTask(task)">Editar</button>
-            <button v-if="editingTask?.id === task.id" v-on:click="saveTask">Salvar</button>
-            <button v-on:click="deleteTask(task.id)">🗑️</button>
-        </li>
-    </ul>
+    <!-- Tabela de tarefas -->
+    <task-table :sorted-tasks="sortedTasks"
+                :editing-task="editingTask"
+                :validation-errors="validationErrors"
+                :edit-task="editTask"
+                :save-task="saveTask"
+                :delete-task="deleteTask"
+                :complete-task="completeTask">
+    </task-table>
 </div>
 
+<!-- Scripts -->
 <script src="/js/vue.global.js" defer></script>
-<script src="/js/taskApp.js" defer></script>
+<script src="/js/taskApp.js" type="module" defer></script>
