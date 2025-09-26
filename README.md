@@ -73,14 +73,13 @@ Este projeto tem como objetivo demonstrar uma arquitetura simples, funcional e e
    ```bash
    docker-compose up --build
    
-   <img width="869" height="390" alt="image" src="https://github.com/user-attachments/assets/f4d512dd-3270-4eab-82fe-e2ae09d8afe9" />
-
----
+<img width="869" height="390" alt="image" src="https://github.com/user-attachments/assets/f4d512dd-3270-4eab-82fe-e2ae09d8afe9" />
 
 - Acesse os serviços:
 - API: 
 - Web UI: 
 O frontend detecta automaticamente o ambiente e se conecta à API correta, seja local ou via Docker.
+---
 
 ### Depurar via Visual Studio
 <img width="1523" height="838" alt="image" src="https://github.com/user-attachments/assets/9e0674bc-3953-4476-8f8f-725d5af72696" />
