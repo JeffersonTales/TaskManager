@@ -1,30 +1,32 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# Etapa base: runtime ASP.NET
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
-
-# This stage is used to build the service project
+# Etapa build: SDK para compilar o projeto
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copia apenas o csproj e restaura dependências
 COPY ["TaskManager.API/TaskManager.API.csproj", "TaskManager.API/"]
-RUN dotnet restore "./TaskManager.API/TaskManager.API.csproj"
+RUN dotnet restore "TaskManager.API/TaskManager.API.csproj"
+
+# Copia o restante do código
 COPY . .
+
+# Compila o projeto
 WORKDIR "/src/TaskManager.API"
-RUN dotnet build "./TaskManager.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "TaskManager.API.csproj" -c Release -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Etapa publish: gera artefatos para produção
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./TaskManager.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "TaskManager.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Etapa final: imagem leve com app publicado
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# SQLite: garante que o banco seja criado se não existir
+VOLUME ["/app"]
 ENTRYPOINT ["dotnet", "TaskManager.API.dll"]

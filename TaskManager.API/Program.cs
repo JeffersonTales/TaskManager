@@ -32,6 +32,13 @@ namespace TaskManager.API
 
             var app = builder.Build();
 
+            // Criação automática do banco de dados SQLite
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
+
             // Middleware
             if (app.Environment.IsDevelopment())
             {
