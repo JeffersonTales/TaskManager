@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Application.DTOs;
 using TaskManager.Application.Interfaces;
+using TaskManager.Infra.Data.Context;
 
 namespace TaskManager.API.Controllers
 {
@@ -77,5 +79,13 @@ namespace TaskManager.API.Controllers
             return NoContent();
         }
         #endregion
+
+
+        [HttpGet("migrations")]
+        public IActionResult GetMigrations([FromServices] TaskDbContext db)
+        {
+            var applied = db.Database.GetAppliedMigrations();
+            return Ok(applied);
+        }
     }
 }
