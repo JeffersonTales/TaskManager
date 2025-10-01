@@ -19,10 +19,10 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Publicar projeto WebUi
-        run: dotnet publish TaskManager.WebUi/TaskManager.WebUi.csproj -c Release -o ./publish
+        run: dotnet publish TaskManager.WebUi/TaskManager.WebUi.csproj -c Release -o ./publish-webui
 
       - name: Deploy para Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: taskmanager-web-ui
-          package: ./publish
+          package: ./publish-webui
