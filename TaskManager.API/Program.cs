@@ -22,7 +22,7 @@ namespace TaskManager.API
                 });
             });
 
-            // Services..
+            // Services...
             builder.Services.AddControllers();
             builder.Services.AddValidatorsFromAssemblyContaining<TaskItemDtoValidator>();
             builder.Services.AddDbContext<TaskDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
