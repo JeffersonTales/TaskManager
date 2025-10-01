@@ -1,4 +1,4 @@
-name: Deploy TaskManager WebUi (Docker)
+name: Deploy TaskManager WebUi (Código)
 
 on:
   push:
@@ -10,23 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Clona o repositório
       - name: Checkout do código
         uses: actions/checkout@v3
 
-      # Autentica no Azure usando Service Principal
       - name: Login no Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Build da imagem Docker da WebUi
-      - name: Build da imagem Docker da WebUi
-        run: docker build -f TaskManager.WebUi/Dockerfile -t taskmanager-webui .
+      - name: Publicar projeto WebUi
+        run: dotnet publish TaskManager.WebUi/TaskManager.WebUi.csproj -c Release -o ./publish
 
-      # Deploy da imagem para o Web App da WebUi
       - name: Deploy para Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: taskmanager-web-ui
-          images: taskmanager-webui
+          package: ./publish
