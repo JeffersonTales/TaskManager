@@ -12,11 +12,10 @@ const app = Vue.createApp({
                 createdAt: new Date().toISOString(),
                 completedAt: null
             },
-            tasks: [],           // Lista de tarefas carregadas da API
-            editingTask: null,   // Tarefa que está sendo editada
-            filter: 'all',       // Filtro ativo: 'all', 'pending', 'completed'
-            validationErrors: {} // ← Objeto para armazenar erros de validação
-
+            tasks: [],
+            editingTask: null,
+            filter: 'all',
+            validationErrors: {}
         };
     },
     computed: {
@@ -35,10 +34,12 @@ const app = Vue.createApp({
     },
     methods: {
         apiUrl(path) {
-            const isDocker = window.location.port === "5001";
-            const base = isDocker
-                ? "http://localhost:5000" // Docker: API sem SSL
-                : "https://localhost:7112"; // Local: API com SSL
+            const isAzure = window.location.hostname.includes("azurewebsites.net");
+            const base = isAzure
+                ? "https://taskmanager-api-a5h9fhemekctamdw.brazilsouth-01.azurewebsites.net"
+                : window.location.port === "5001"
+                    ? "http://localhost:5000"
+                    : "https://localhost:7112";
 
             return base + path;
         },
