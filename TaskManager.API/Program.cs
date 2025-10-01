@@ -22,11 +22,8 @@ namespace TaskManager.API
                 });
             });
 
-            // Caminho seguro para o SQLite no Azure
-            var dbPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "taskmanager.db"
-            );
+            // Caminho persistente para o SQLite no Azure
+            var dbPath = "/home/data/taskmanager.db";
 
             // Registro de serviços
             builder.Services.AddControllers();
@@ -49,7 +46,7 @@ namespace TaskManager.API
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao aplicar migração: {ex.Message}");
-                // Opcional: logar em arquivo ou serviço externo
+                // Aqui você pode logar em um arquivo ou serviço externo se quiser
             }
 
             // Pipeline de middleware
