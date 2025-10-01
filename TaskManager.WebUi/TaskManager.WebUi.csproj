@@ -11,5 +11,4 @@
       <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
     </None>
   </ItemGroup>
-
 </Project>
