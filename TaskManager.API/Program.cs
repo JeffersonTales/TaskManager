@@ -36,17 +36,17 @@ namespace TaskManager.API
 
             var app = builder.Build();
 
-            // Aplica migrations automaticamente com tratamento de erro
+            // ⚠️ Apaga o banco e recria do zero
             try
             {
                 using var scope = app.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
-                db.Database.Migrate();
+                db.Database.EnsureDeleted(); // Apaga o banco
+                db.Database.Migrate();       // Recria com base nas migrações
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao aplicar migração: {ex.Message}");
-                // Aqui você pode logar em um arquivo ou serviço externo se quiser
             }
 
             // Pipeline de middleware
