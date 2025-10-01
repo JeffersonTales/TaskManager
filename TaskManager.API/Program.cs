@@ -22,24 +22,31 @@ namespace TaskManager.API
                 });
             });
 
-            // Services....
+            // Caminho seguro para o SQLite no Azure
+            var dbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "taskmanager.db"
+            );
+
+            // Registro de serviços
             builder.Services.AddControllers();
             builder.Services.AddValidatorsFromAssemblyContaining<TaskItemDtoValidator>();
-            builder.Services.AddDbContext<TaskDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<TaskDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddInfrastructure();
 
             var app = builder.Build();
 
-            // Criação automática do banco de dados SQLite
+            //Aplica migrations automaticamente
             using (var scope = app.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
-                dbContext.Database.EnsureCreated();
+                var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+                db.Database.Migrate();
             }
 
-            // Middleware
+            // Pipeline de middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -47,13 +54,9 @@ namespace TaskManager.API
             }
 
             app.UseHttpsRedirection();
-
-            app.UseRouting(); // 👈 Adicionado
-
-            app.UseCors(); // ✅ CORS aplicado
-
+            app.UseRouting();
+            app.UseCors();
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();
