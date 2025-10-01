@@ -27,6 +27,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# SQLite: garante que o banco seja criado se não existir
+# Define porta de escuta para o Azure
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
 VOLUME ["/app"]
 ENTRYPOINT ["dotnet", "TaskManager.API.dll"]

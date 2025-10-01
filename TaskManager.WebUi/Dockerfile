@@ -26,4 +26,9 @@ RUN dotnet publish "TaskManager.WebUi.csproj" -c Release -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Define porta de escuta para o Azure
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
 ENTRYPOINT ["dotnet", "TaskManager.WebUi.dll"]
