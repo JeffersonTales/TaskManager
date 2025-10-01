@@ -8,16 +8,21 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout código
+      - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Build imagem Docker da API
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build da imagem Docker da API
         run: docker build -f TaskManager.API/Dockerfile -t taskmanager-api .
 
       - name: Deploy para Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: taskmanager-api
-          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
           images: taskmanager-api
