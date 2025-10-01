@@ -29,7 +29,8 @@ namespace TaskManager.API
             builder.Services.AddControllers();
             builder.Services.AddValidatorsFromAssemblyContaining<TaskItemDtoValidator>();
             builder.Services.AddDbContext<TaskDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+     options.UseSqlite($"Data Source={dbPath}", sqlite =>
+         sqlite.MigrationsAssembly("TaskManager.Infra.Data")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddInfrastructure();
