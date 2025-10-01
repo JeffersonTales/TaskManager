@@ -19,10 +19,10 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Publicar projeto API
-        run: dotnet publish TaskManager.API/TaskManager.API.csproj -c Release -o ./publish
+        run: dotnet publish TaskManager.API/TaskManager.API.csproj -c Release -o ./publish-api
 
       - name: Deploy para Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: taskmanager-api
-          package: ./publish
+          package: ./publish-api
