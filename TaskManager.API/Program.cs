@@ -23,7 +23,7 @@ namespace TaskManager.API
             });
 
             // Caminho persistente para o SQLite no Azure
-            var dbPath = "/home/data/taskmanager_fresh.db";
+            var dbPath = "/home/data/taskmanager_final.db";
 
             // Registro de serviços
             builder.Services.AddControllers();

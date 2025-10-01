@@ -22,11 +22,4 @@
     <ProjectReference Include="..\TaskManager.Infra.Data\TaskManager.Infra.Data.csproj" />
     <ProjectReference Include="..\TaskManager.Infra.IoC\TaskManager.Infra.IoC.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="taskmanager.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
