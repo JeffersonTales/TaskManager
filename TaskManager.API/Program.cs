@@ -39,19 +39,22 @@ namespace TaskManager.API
 
             var app = builder.Build();
 
-            //Aplica migrations automaticamente
-            using (var scope = app.Services.CreateScope())
+            // Aplica migrations automaticamente com tratamento de erro
+            try
             {
+                using var scope = app.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
                 db.Database.Migrate();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao aplicar migração: {ex.Message}");
+                // Opcional: logar em arquivo ou serviço externo
+            }
 
             // Pipeline de middleware
-            //if (app.Environment.IsDevelopment())
-            //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            //}
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
             app.UseRouting();
