@@ -23,7 +23,7 @@ namespace TaskManager.API
             });
 
             // Caminho persistente para o SQLite no Azure
-            var dbPath = "/home/data/taskmanager.db";
+            var dbPath = "/home/data/taskmanager_clean.db";
 
             // Registro de serviços
             builder.Services.AddControllers();
@@ -36,17 +36,15 @@ namespace TaskManager.API
 
             var app = builder.Build();
 
-            // ⚠️ Apaga o banco e recria do zero
             try
             {
                 using var scope = app.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
-                db.Database.EnsureDeleted(); // Apaga o banco
-                db.Database.Migrate();       // Recria com base nas migrações
+                db.Database.Migrate();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao aplicar migração: {ex.Message}");
+                Console.WriteLine(ex.ToString());
             }
 
             // Pipeline de middleware
